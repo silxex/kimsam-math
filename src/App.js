@@ -147,8 +147,8 @@ function MemoScreen({dan,onDone}){
 /* ── 구구단 퀴즈 ────────────────────────────────── */
 function TTQuiz({dan,initLevel,onBack,onComplete}){
   const color=DAN_COLORS[dan],light=DAN_LIGHT[dan];
-  const [levelIdx,setLevelIdx]=useState(initLevel??null);
-  const [questions,setQuestions]=useState([]);
+  const [levelIdx,setLevelIdx]=useState(initLevel);
+  const [questions,setQuestions]=useState(()=>makeTTQuestions(dan,TT_LEVELS[initLevel]));
   const [qIdx,setQIdx]=useState(0);
   const [selected,setSelected]=useState(null);
   const [status,setStatus]=useState(null);
@@ -164,11 +164,6 @@ function TTQuiz({dan,initLevel,onBack,onComplete}){
     setLevelIdx(idx);setQuestions(makeTTQuestions(dan,TT_LEVELS[idx]));
     setQIdx(0);setSelected(null);setStatus(null);setScore(0);setWrongs([]);setCombo(0);setDone(false);
   },[dan]);
-
-  useEffect(()=>{
-    if(initLevel!=null) startLevel(initLevel);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[initLevel]);
 
   const q=questions[qIdx];
   const total=questions.length;
@@ -190,24 +185,6 @@ function TTQuiz({dan,initLevel,onBack,onComplete}){
     if(qIdx+1>=total){const fs=score+(status==="correct"?1:0);onComplete(dan,levelIdx,fs,total);setDone(true);}
     else{setQIdx(i=>i+1);setSelected(null);setStatus(null);}
   };
-
-  // 난이도 선택
-  if(levelIdx===null) return(
-    <div>
-      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:18}}>
-        <button onClick={onBack} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:"#B2BEC3"}}>←</button>
-        <span style={{fontSize:16,fontWeight:900,color,fontFamily:"'Nunito',sans-serif"}}>{DAN_EMOJI[dan]} {DAN_NAMES[dan]}단 퀴즈</span>
-      </div>
-      <div style={{textAlign:"center",fontSize:13,color:"#888",fontFamily:"'Nunito',sans-serif",marginBottom:16}}>난이도를 선택해요!</div>
-      {TT_LEVELS.map((lv,i)=>(
-        <button key={lv.key} onClick={()=>startLevel(i)} style={{width:"100%",marginBottom:10,padding:"16px 18px",background:lv.key==="easy"?"#F1FFF4":lv.key==="normal"?"#FFFDF0":"#FFF5F5",border:`2.5px solid ${lv.color}`,borderRadius:18,cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:14,transition:"transform 0.15s",animation:`slideUp 0.4s ${i*0.1}s both`}}
-          onMouseEnter={e=>e.currentTarget.style.transform="scale(1.02)"} onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
-          <span style={{fontSize:30}}>{lv.emoji}</span>
-          <div><div style={{fontSize:15,fontWeight:900,color:lv.color,fontFamily:"'Nunito',sans-serif"}}>{lv.label}</div><div style={{fontSize:12,color:"#888",fontFamily:"'Nunito',sans-serif"}}>{lv.desc} · {lv.q}문제</div></div>
-        </button>
-      ))}
-    </div>
-  );
 
   // 완료
   if(done){
@@ -466,9 +443,9 @@ export default function App(){
 
         {/* 구구단 마스터 화면들 */}
         {screen==="tt_home"&&<TTHome records={ttRecords} onSelect={dan=>{setActiveDan(dan);setScreen("tt_danmenu");}} onBack={()=>setScreen("units")}/>}
-        {screen==="tt_danmenu"&&activeDan&&<DanMenu dan={activeDan} onMemo={()=>setScreen("tt_memo")} onQuiz={(lvIdx)=>{setActiveTTLevel(lvIdx);setScreen("tt_quiz");}} onBack={()=>setScreen("tt_home")}/>}
+        {screen==="tt_danmenu"&&activeDan&&<DanMenu dan={activeDan} onMemo={()=>setScreen("tt_memo")} onQuiz={(lvIdx)=>{ setActiveTTLevel(lvIdx); setScreen("tt_quiz"); }} onBack={()=>setScreen("tt_home")}/>}
         {screen==="tt_memo"&&activeDan&&<MemoScreen dan={activeDan} onDone={()=>setScreen("tt_danmenu")}/>}
-        {screen==="tt_quiz"&&activeDan&&<TTQuiz key={`${activeDan}-${activeTTLevel}`} dan={activeDan} initLevel={activeTTLevel} onBack={()=>setScreen("tt_danmenu")} onComplete={handleTTComplete}/>}
+        {screen==="tt_quiz"&&activeDan&&activeTTLevel!=null&&<TTQuiz key={`${activeDan}-${activeTTLevel}`} dan={activeDan} initLevel={activeTTLevel} onBack={()=>{ setActiveTTLevel(null); setScreen("tt_danmenu"); }} onComplete={handleTTComplete}/>}
       </div>
       <style>{`
         @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
