@@ -165,7 +165,10 @@ function TTQuiz({dan,initLevel,onBack,onComplete}){
     setQIdx(0);setSelected(null);setStatus(null);setScore(0);setWrongs([]);setCombo(0);setDone(false);
   },[dan]);
 
-  useEffect(()=>{if(initLevel!=null)startLevel(initLevel);},[]);
+  useEffect(()=>{
+    if(initLevel!=null) startLevel(initLevel);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[initLevel]);
 
   const q=questions[qIdx];
   const total=questions.length;
@@ -433,6 +436,7 @@ export default function App(){
   const [activeSem,setActiveSem]=useState(null);
   const [activeUnit,setActiveUnit]=useState(null);
   const [activeDan,setActiveDan]=useState(null);
+  const [activeTTLevel,setActiveTTLevel]=useState(null);
   const [stars,setStars]=useState({});
   const [ttRecords,setTTRecords]=useState({});
 
@@ -462,9 +466,9 @@ export default function App(){
 
         {/* 구구단 마스터 화면들 */}
         {screen==="tt_home"&&<TTHome records={ttRecords} onSelect={dan=>{setActiveDan(dan);setScreen("tt_danmenu");}} onBack={()=>setScreen("units")}/>}
-        {screen==="tt_danmenu"&&activeDan&&<DanMenu dan={activeDan} onMemo={()=>setScreen("tt_memo")} onQuiz={()=>setScreen("tt_quiz")} onBack={()=>setScreen("tt_home")}/>}
+        {screen==="tt_danmenu"&&activeDan&&<DanMenu dan={activeDan} onMemo={()=>setScreen("tt_memo")} onQuiz={(lvIdx)=>{setActiveTTLevel(lvIdx);setScreen("tt_quiz");}} onBack={()=>setScreen("tt_home")}/>}
         {screen==="tt_memo"&&activeDan&&<MemoScreen dan={activeDan} onDone={()=>setScreen("tt_danmenu")}/>}
-        {screen==="tt_quiz"&&activeDan&&<TTQuiz dan={activeDan} initLevel={null} onBack={()=>setScreen("tt_danmenu")} onComplete={handleTTComplete}/>}
+        {screen==="tt_quiz"&&activeDan&&<TTQuiz key={`${activeDan}-${activeTTLevel}`} dan={activeDan} initLevel={activeTTLevel} onBack={()=>setScreen("tt_danmenu")} onComplete={handleTTComplete}/>}
       </div>
       <style>{`
         @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
