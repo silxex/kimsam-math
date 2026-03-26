@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import App4 from "./App_grade4";
 
 /* ══════════════════════════════════════════
    SVG 컴포넌트
@@ -370,6 +371,38 @@ function UnitSelect({semester,stars,ttRec,onSelect,onBack}){const sd=SDATA[semes
    메인 App
 ══════════════════════════════════════════ */
 export default function App(){
+  const [grade,setGrade]=useState(null); // null | 2 | 4
+
+  if(grade===4) return <App4 onBack={()=>setGrade(null)}/>;
+
+  if(grade===null) return(
+    <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#F8F9FA 0%,#EEF2FF 100%)",display:"flex",alignItems:"flex-start",justifyContent:"center",padding:20,boxSizing:"border-box"}}>
+      <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet"/>
+      <div style={{background:"white",borderRadius:32,padding:"28px 22px",width:"100%",maxWidth:420,boxShadow:"0 20px 60px rgba(0,0,0,0.08)"}}>
+        <div style={{textAlign:"center",marginBottom:28}}>
+          <div style={{fontSize:56,marginBottom:8}}>📚</div>
+          <h1 style={{margin:0,fontSize:26,fontWeight:900,color:"#2D3436",fontFamily:"'Nunito',sans-serif"}}>초등 수학</h1>
+          <p style={{margin:"6px 0 0",color:"#B2BEC3",fontSize:13,fontFamily:"'Nunito',sans-serif"}}>학년을 선택해주세요!</p>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:14}}>
+          {[{g:2,emoji:"🐣",color:"#FF9F43",light:"#FFF3E0",border:"#FFD08A",desc:"세 자리 수 · 도형 · 덧셈뺄셈 · 구구단 등"},{g:4,emoji:"🦊",color:"#A29BFE",light:"#EDE7F6",border:"#CE93D8",desc:"큰 수 · 각도 · 분수 · 소수 · 다각형 등"}].map(({g,emoji,color,light,border,desc})=>(
+            <button key={g} onClick={()=>setGrade(g)} style={{padding:"22px 20px",borderRadius:24,border:,background:light,cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:16,transition:"transform 0.15s,box-shadow 0.15s",boxShadow:"0 6px 20px rgba(0,0,0,0.07)"}}
+              onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.03)";e.currentTarget.style.boxShadow=;}}
+              onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="0 6px 20px rgba(0,0,0,0.07)";}}>
+              <span style={{fontSize:44}}>{emoji}</span>
+              <div>
+                <div style={{fontSize:20,fontWeight:900,color,fontFamily:"'Nunito',sans-serif"}}>{g}학년</div>
+                <div style={{fontSize:12,color:"#888",fontFamily:"'Nunito',sans-serif",marginTop:3}}>{desc}</div>
+                <div style={{fontSize:11,color:color,fontFamily:"'Nunito',sans-serif",marginTop:4}}>1학기 + 2학기 · 각 6단원</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+      <style>{}</style>
+    </div>
+  );
+
   const [screen,setScreen]=useState("semester");
   const [activeSem,setActiveSem]=useState(null);
   const [activeUnit,setActiveUnit]=useState(null);
