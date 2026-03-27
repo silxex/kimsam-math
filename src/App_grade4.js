@@ -1,15 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
 
 
-/* ══════════════════════════════════════════
-   중복 방지 문제 생성 헬퍼
-══════════════════════════════════════════ */
-function makeQPool(gens, count=20) {
+/* ══ 중복없는 문제 생성 ══ */
+function makeQPool(gens, n=20) {
   const result = [];
-  for(let i=0; i<count; i++) {
-    result.push(gens[i % gens.length]());
+  const copies = Math.ceil(n / gens.length) + 1;
+  const pool = [];
+  for (let cp = 0; cp < copies; cp++) {
+    const shuffled = [...gens].sort(() => Math.random() - 0.5);
+    shuffled.forEach(g => pool.push(g()));
   }
-  return result.sort(()=>Math.random()-0.5);
+  const seen = new Set();
+  for (const q of pool) {
+    if (result.length >= n) break;
+    const key = q.q.slice(0, 20);
+    if (!seen.has(key)) { seen.add(key); result.push(q); }
+  }
+  while (result.length < n) result.push(gens[result.length % gens.length]());
+  return result;
 }
 
 /* ══════════════════════════════════════════
