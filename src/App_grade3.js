@@ -177,7 +177,34 @@ const g3_2_6_gens = [
 function makeGen(gens){ return ()=>{ const pool=makePool(gens); let i=0; return pool[i++ % pool.length]; }; }
 
 // 각 단원별로 문제 풀 생성 (20문제, 다양하게)
-function makeQuestions(gens){ return Array.from({length:20},(_,i)=>gens[i%gens.length]()); }
+/* ══ 중복없는 문제 생성 ══
+   gens 배열의 각 함수를 골고루 섞어서 n개 출제.
+   같은 유형이 연속으로 나오지 않도록 함. */
+function makeQuestions(gens, n=20) {
+  const result = [];
+  // 각 generator를 여러 번 호출해 충분한 pool 확보
+  const copies = Math.ceil(n / gens.length) + 1;
+  const pool = [];
+  for (let c = 0; c < copies; c++) {
+    const shuffled = [...gens].sort(() => Math.random() - 0.5);
+    shuffled.forEach(g => pool.push(g()));
+  }
+  // 연속 중복 제거하며 n개 선택
+  const seen = new Set();
+  for (const q of pool) {
+    if (result.length >= n) break;
+    const key = q.q.slice(0, 20);
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push(q);
+    }
+  }
+  // 부족하면 채우기
+  while (result.length < n) {
+    result.push(gens[result.length % gens.length]());
+  }
+  return result;
+}
 
 const SDATA3={
   1:{title:"1학기",emoji:"🌸",bg:"linear-gradient(135deg,#FFF3E0,#FFF9E6)",border:"#FFD08A",units:[
