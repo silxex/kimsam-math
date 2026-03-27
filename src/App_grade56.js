@@ -5,7 +5,34 @@ function Confetti() {
   return(<div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:9998,overflow:"hidden"}}>{Array.from({length:30},(_,i)=>(<div key={i} style={{position:"absolute",left:`${Math.random()*100}%`,top:"-16px",width:7+Math.random()*9,height:7+Math.random()*9,borderRadius:Math.random()>0.5?"50%":"2px",background:c[i%6],animation:`fall ${1.2+Math.random()*1.5}s ${Math.random()*0.5}s linear forwards`}}/>))}</div>);
 }
 function btn(bg,col="white"){return{width:"100%",padding:"13px",borderRadius:16,border:"none",background:bg,color:col,fontSize:15,fontWeight:900,cursor:"pointer",fontFamily:"'Nunito',sans-serif",boxShadow:`0 5px 16px ${bg}55`};}
-function makeQ(gens,n=20){return Array.from({length:n},(_,i)=>gens[i%gens.length]()).sort(()=>Math.random()-0.5);}
+/* ══ 중복없는 문제 생성 ══
+   gens 배열의 각 함수를 골고루 섞어서 n개 출제.
+   같은 유형이 연속으로 나오지 않도록 함. */
+function makeQ(gens, n=20) {
+  const result = [];
+  // 각 generator를 여러 번 호출해 충분한 pool 확보
+  const copies = Math.ceil(n / gens.length) + 1;
+  const pool = [];
+  for (let c = 0; c < copies; c++) {
+    const shuffled = [...gens].sort(() => Math.random() - 0.5);
+    shuffled.forEach(g => pool.push(g()));
+  }
+  // 연속 중복 제거하며 n개 선택
+  const seen = new Set();
+  for (const q of pool) {
+    if (result.length >= n) break;
+    const key = q.q.slice(0, 20);
+    if (!seen.has(key)) {
+      seen.add(key);
+      result.push(q);
+    }
+  }
+  // 부족하면 채우기
+  while (result.length < n) {
+    result.push(gens[result.length % gens.length]());
+  }
+  return result;
+}
 function gcd(a,b){return b===0?a:gcd(b,a%b);}
 function simplify(n,d){const g=gcd(Math.abs(n),Math.abs(d));return[n/g,d/g];}
 
