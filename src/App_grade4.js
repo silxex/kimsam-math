@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 
+
+/* ══════════════════════════════════════════
+   중복 방지 문제 생성 헬퍼
+══════════════════════════════════════════ */
+function makeQPool(gens, count=20) {
+  const result = [];
+  for(let i=0; i<count; i++) {
+    result.push(gens[i % gens.length]());
+  }
+  return result.sort(()=>Math.random()-0.5);
+}
+
 /* ══════════════════════════════════════════
    SVG 컴포넌트
 ══════════════════════════════════════════ */
@@ -86,27 +98,25 @@ function g4_1_1(){
 }
 
 // 2단원: 각도
-function g4_1_2(){
-  const t=Math.floor(Math.random()*4);
-  if(t===0){
-    const angles=[30,45,60,75,90,120,135,150];
-    const a=angles[Math.floor(Math.random()*angles.length)];
-    const type=a<90?"예각":a===90?"직각":"둔각";
-    const others=[a+15,a-15,a+30].filter(x=>x>0&&x<=180&&x!==a);
-    return{showAngle:a,q:`이 각도는 몇 도인가요?`,choices:[String(a),...others.slice(0,3).map(String)].sort(()=>Math.random()-0.5),ans:String(a),explain:`${a}°는 ${type}이에요.`};
-  }
-  if(t===1){
-    return{q:`직각은 몇 도인가요?`,choices:["90°","45°","180°","60°"].sort(()=>Math.random()-0.5),ans:"90°",explain:`직각은 90°예요.`};
-  }
-  if(t===2){
-    const a=Math.floor(Math.random()*8)*10+10,b=Math.floor(Math.random()*8)*10+10;
-    const ans=Math.min(a+b,360);
-    return{q:`${a}° + ${b}° = ?`,choices:[String(ans)+"°",String(ans+10)+"°",String(ans-10)+"°",String(ans+5)+"°"].sort(()=>Math.random()-0.5),ans:String(ans)+"°",explain:`${a}° + ${b}° = ${ans}°`};
-  }
-  const a=Math.floor(Math.random()*8)*10+30,b=Math.floor(Math.random()*a/10)*10+10;
-  const ans=a-b;
-  return{q:`${a}° - ${b}° = ?`,choices:[String(ans)+"°",String(ans+10)+"°",String(ans-10)+"°",String(ans+5)+"°"].sort(()=>Math.random()-0.5),ans:String(ans)+"°",explain:`${a}° - ${b}° = ${ans}°`};
-}
+// 4학년 1학기 2단원: 각도 — generator pool
+const g4_1_2_gens = [
+  ()=>{const a=[30,45,60,75,120,135,150][Math.floor(Math.random()*7)];const t=a<90?"예각":"둔각";return{showAngle:a,q:`이 각도는 몇 도인가요?`,choices:[String(a),String(a+15),String(a-15),String(a+30)].filter((v,i,arr)=>arr.indexOf(v)===i&&Number(v)>0).sort(()=>Math.random()-0.5),ans:String(a),explain:`${a}°는 ${t}이에요.`};},
+  ()=>({q:`직각은 몇 도인가요?`,choices:["90°","45°","180°","60°"].sort(()=>Math.random()-0.5),ans:"90°",explain:`직각은 90°예요.`}),
+  ()=>{const a=Math.floor(Math.random()*8)*10+10,b=Math.floor(Math.random()*8)*10+10,ans=a+b;return{q:`${a}° + ${b}° = ?`,choices:[`${ans}°`,`${ans+10}°`,`${ans-10}°`,`${ans+5}°`].sort(()=>Math.random()-0.5),ans:`${ans}°`,explain:`${a}°+${b}°=${ans}°`};},
+  ()=>{const a=Math.floor(Math.random()*7)*10+40,b=Math.floor(Math.random()*3)*10+10,ans=a-b;return{q:`${a}° - ${b}° = ?`,choices:[`${ans}°`,`${ans+10}°`,`${ans-10}°`,`${ans+5}°`].sort(()=>Math.random()-0.5),ans:`${ans}°`,explain:`${a}°-${b}°=${ans}°`};},
+  ()=>({q:`예각은 몇 도보다 작은가요?`,choices:["90°","180°","45°","360°"].sort(()=>Math.random()-0.5),ans:"90°",explain:`예각은 0°보다 크고 90°보다 작아요.`}),
+  ()=>({q:`둔각은 어떤 각도인가요?`,choices:["90°보다 크고 180°보다 작다","90°보다 작다","180°보다 크다","90°와 같다"].sort(()=>Math.random()-0.5),ans:"90°보다 크고 180°보다 작다",explain:`둔각은 90°초과 180°미만이에요.`}),
+  ()=>{const a=Math.floor(Math.random()*6)*10+10,b=180-a;return{q:`두 각의 합이 180°일 때
+한 각이 ${a}°이면 다른 각은?`,choices:[`${b}°`,`${b+10}°`,`${b-10}°`,`${b+5}°`].sort(()=>Math.random()-0.5),ans:`${b}°`,explain:`180°-${a}°=${b}°`};},
+  ()=>{const a=Math.floor(Math.random()*6)*10+10,b=90-a;if(b<=0)return g4_1_2_gens[6]();return{q:`두 각의 합이 90°일 때
+한 각이 ${a}°이면 다른 각은?`,choices:[`${b}°`,`${b+10}°`,`${b-10}°`,`${b+5}°`].sort(()=>Math.random()-0.5),ans:`${b}°`,explain:`90°-${a}°=${b}°`};},
+  ()=>{const a=Math.floor(Math.random()*6)*15+15;return{q:`${a}°는 어떤 각인가요?`,choices:[a<90?"예각":a===90?"직각":a<180?"둔각":"평각","예각","직각","둔각"].filter((v,i,arr)=>arr.indexOf(v)===i).sort(()=>Math.random()-0.5),ans:a<90?"예각":a===90?"직각":a<180?"둔각":"평각",explain:`${a}°는 ${a<90?"예각(0°~90°미만)":a===90?"직각(90°)":a<180?"둔각(90°~180°미만)":"평각(180°)"}이에요.`};},
+  ()=>{const a=Math.floor(Math.random()*35)*4+20,b=Math.floor(Math.random()*20)*4+20,c=360-a-b;return{q:`삼각형의 세 각도가 ${a}°, ${b}°, □°일 때
+□는? (삼각형의 내각의 합=180°)`,choices:[`${180-a-b}°`,`${180-a-b+10}°`,`${180-a-b-10}°`,`${180-a-b+5}°`].sort(()=>Math.random()-0.5),ans:`${180-a-b}°`,explain:`180°-${a}°-${b}°=${180-a-b}°`};},
+];
+function g4_1_2(){ const qs=makeQPool(g4_1_2_gens,20); let i=0; return qs[i++%20]; }
+// 단원별 pool을 만들어 사용
+function make_g4_1_2_pool(){ return makeQPool(g4_1_2_gens,20); }
 
 // 3단원: 곱셈과 나눗셈
 function g4_1_3(){
