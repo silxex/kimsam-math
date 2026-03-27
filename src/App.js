@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import App4 from "./App_grade4";
+import App3 from "./App_grade3";
 
 /* ══════════════════════════════════════════
    SVG 컴포넌트
@@ -373,6 +374,7 @@ function UnitSelect({semester,stars,ttRec,onSelect,onBack}){const sd=SDATA[semes
 function GradeSelect({ onSelect }) {
   const grades = [
     { g:2, emoji:"🐣", color:"#FF9F43", light:"#FFF3E0", border:"#FFD08A", desc:"세 자리 수 · 도형 · 덧셈뺄셈 · 구구단 등" },
+    { g:3, emoji:"🐥", color:"#55EFC4", light:"#E0F2F1", border:"#80CBC4", desc:"덧셈뺄셈 · 나눗셈 · 곱셈 · 분수 · 원 등" },
     { g:4, emoji:"🦊", color:"#A29BFE", light:"#EDE7F6", border:"#CE93D8", desc:"큰 수 · 각도 · 분수 · 소수 · 다각형 등" },
   ];
   return (
@@ -460,6 +462,7 @@ export default function App() {
 
   if (grade === null) return <GradeSelect onSelect={setGrade} />;
   if (grade === 2)    return <Grade2App onBack={() => setGrade(null)} />;
+  if (grade === 3)    return <App3 onBack={() => setGrade(null)} />;
   if (grade === 4)    return <App4 onBack={() => setGrade(null)} />;
   return null;
 }
