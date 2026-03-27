@@ -368,14 +368,14 @@ function SemesterSelect({sc,onSelect}){return(<div style={{textAlign:"center",pa
 function UnitSelect({semester,stars,ttRec,onSelect,onBack}){const sd=SDATA[semester];return(<div style={{padding:"0 4px"}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:18}}><button onClick={onBack} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:"#B2BEC3"}}>←</button><div><div style={{fontSize:11,color:"#B2BEC3",fontFamily:"'Nunito',sans-serif"}}>2학년 수학</div><div style={{fontSize:18,fontWeight:900,color:"#2D3436",fontFamily:"'Nunito',sans-serif"}}>{sd.emoji} {sd.title}</div></div></div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>{sd.units.map((u,i)=>{const isTT=u.isTT,ts=isTT?Math.max(...[2,3,4,5,6,7,8,9].map(d=>ttRec[d]?.stars||0),0):0;return(<button key={u.id} onClick={()=>onSelect(u.id)} style={{background:u.light,border:`2.5px solid ${u.border}`,borderRadius:20,padding:"14px 12px",cursor:"pointer",textAlign:"left",boxShadow:"0 3px 12px rgba(0,0,0,0.06)",animation:`slideUp 0.4s ${i*0.07}s both`,transition:"transform 0.15s"}} onMouseEnter={e=>e.currentTarget.style.transform="scale(1.04)"} onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}><div style={{fontSize:24,marginBottom:4}}>{u.emoji}</div><div style={{fontSize:12,fontWeight:900,color:"#2D3436",fontFamily:"'Nunito',sans-serif"}}>{u.id}단원</div><div style={{fontSize:11,fontWeight:700,color:u.color,fontFamily:"'Nunito',sans-serif"}}>{u.title}</div>{isTT?<div style={{marginTop:6}}><div style={{fontSize:9,color:"#00B894",fontFamily:"'Nunito',sans-serif",marginBottom:2}}>⚡ 구구단 마스터!</div><div>{Array.from({length:3},(_,j)=><span key={j} style={{fontSize:12,opacity:j<ts?1:0.2}}>⭐</span>)}</div></div>:<div style={{marginTop:6,display:"flex",gap:1}}>{Array.from({length:3},(_,j)=><span key={j} style={{fontSize:12,opacity:j<(stars[`${semester}-${u.id}`]||0)?1:0.2}}>⭐</span>)}</div>}<div style={{marginTop:2,fontSize:10,color:"#B2BEC3",fontFamily:"'Nunito',sans-serif"}}>{isTT?"2~9단 전체":"20문제"}</div></button>);})}</div></div>);}
 
 /* ══════════════════════════════════════════
-   메인 App
+   학년 선택 화면
 ══════════════════════════════════════════ */
-export default function App(){
-  const [grade,setGrade]=useState(null); // null | 2 | 4
-
-  if(grade===4) return <App4 onBack={()=>setGrade(null)}/>;
-
-  if(grade===null) return(
+function GradeSelect({ onSelect }) {
+  const grades = [
+    { g:2, emoji:"🐣", color:"#FF9F43", light:"#FFF3E0", border:"#FFD08A", desc:"세 자리 수 · 도형 · 덧셈뺄셈 · 구구단 등" },
+    { g:4, emoji:"🦊", color:"#A29BFE", light:"#EDE7F6", border:"#CE93D8", desc:"큰 수 · 각도 · 분수 · 소수 · 다각형 등" },
+  ];
+  return (
     <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#F8F9FA 0%,#EEF2FF 100%)",display:"flex",alignItems:"flex-start",justifyContent:"center",padding:20,boxSizing:"border-box"}}>
       <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet"/>
       <div style={{background:"white",borderRadius:32,padding:"28px 22px",width:"100%",maxWidth:420,boxShadow:"0 20px 60px rgba(0,0,0,0.08)"}}>
@@ -385,24 +385,30 @@ export default function App(){
           <p style={{margin:"6px 0 0",color:"#B2BEC3",fontSize:13,fontFamily:"'Nunito',sans-serif"}}>학년을 선택해주세요!</p>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:14}}>
-          {[{g:2,emoji:"🐣",color:"#FF9F43",light:"#FFF3E0",border:"#FFD08A",desc:"세 자리 수 · 도형 · 덧셈뺄셈 · 구구단 등"},{g:4,emoji:"🦊",color:"#A29BFE",light:"#EDE7F6",border:"#CE93D8",desc:"큰 수 · 각도 · 분수 · 소수 · 다각형 등"}].map(({g,emoji,color,light,border,desc})=>(
-            <button key={g} onClick={()=>setGrade(g)} style={{padding:"22px 20px",borderRadius:24,border:,background:light,cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:16,transition:"transform 0.15s,box-shadow 0.15s",boxShadow:"0 6px 20px rgba(0,0,0,0.07)"}}
-              onMouseEnter={e=>{e.currentTarget.style.transform="scale(1.03)";e.currentTarget.style.boxShadow=;}}
-              onMouseLeave={e=>{e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="0 6px 20px rgba(0,0,0,0.07)";}}>
+          {grades.map(({g,emoji,color,light,border,desc})=>(
+            <button key={g} onClick={()=>onSelect(g)}
+              style={{padding:"22px 20px",borderRadius:24,border:`3px solid ${border}`,background:light,cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:16,transition:"transform 0.15s",boxShadow:"0 6px 20px rgba(0,0,0,0.07)"}}
+              onMouseEnter={e=>e.currentTarget.style.transform="scale(1.03)"}
+              onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
               <span style={{fontSize:44}}>{emoji}</span>
               <div>
                 <div style={{fontSize:20,fontWeight:900,color,fontFamily:"'Nunito',sans-serif"}}>{g}학년</div>
                 <div style={{fontSize:12,color:"#888",fontFamily:"'Nunito',sans-serif",marginTop:3}}>{desc}</div>
-                <div style={{fontSize:11,color:color,fontFamily:"'Nunito',sans-serif",marginTop:4}}>1학기 + 2학기 · 각 6단원</div>
+                <div style={{fontSize:11,color,fontFamily:"'Nunito',sans-serif",marginTop:4}}>1학기 + 2학기 · 각 6단원</div>
               </div>
             </button>
           ))}
         </div>
       </div>
-      <style>{}</style>
+      <style>{`body{margin:0;font-family:'Nunito',sans-serif;}`}</style>
     </div>
   );
+}
 
+/* ══════════════════════════════════════════
+   2학년 앱
+══════════════════════════════════════════ */
+function Grade2App({ onBack }) {
   const [screen,setScreen]=useState("semester");
   const [activeSem,setActiveSem]=useState(null);
   const [activeUnit,setActiveUnit]=useState(null);
@@ -424,10 +430,12 @@ export default function App(){
       <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet"/>
       <div style={{background:"white",borderRadius:32,padding:"24px 20px",width:"100%",maxWidth:420,boxShadow:"0 20px 60px rgba(0,0,0,0.08)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18,paddingBottom:14,borderBottom:"2px dashed #F0F0F0"}}>
-          <div style={{fontSize:13,fontWeight:800,color:"#B2BEC3",fontFamily:"'Nunito',sans-serif"}}>초등 2학년</div>
+          <div style={{display:"flex",alignItems:"center",gap:8}}>
+            <button onClick={onBack} style={{background:"none",border:"none",fontSize:18,cursor:"pointer",color:"#B2BEC3",padding:0}}>←</button>
+            <span style={{fontSize:13,fontWeight:800,color:"#B2BEC3",fontFamily:"'Nunito',sans-serif"}}>초등 2학년</span>
+          </div>
           <div style={{background:"#FFF9E6",border:"2px solid #FDCB6E",borderRadius:99,padding:"4px 14px",fontSize:13,fontWeight:900,color:"#FF9F43",fontFamily:"'Nunito',sans-serif"}}>⭐ {sc[1]+sc[2]}</div>
         </div>
-
         {screen==="semester"&&<SemesterSelect sc={sc} onSelect={sem=>{setActiveSem(sem);setScreen("units");}}/>}
         {screen==="units"&&activeSem&&<UnitSelect semester={activeSem} stars={stars} ttRec={ttRec} onSelect={uid=>{setActiveUnit(uid);const u=SDATA[activeSem].units.find(x=>x.id===uid);setScreen(u.isTT?"tt":"quiz");}} onBack={()=>setScreen("semester")}/>}
         {screen==="quiz"&&activeSem&&activeUnit&&<QuizScreen semester={activeSem} unitId={activeUnit} onBack={()=>setScreen("units")} onStar={(key,s)=>setStars(p=>({...p,[key]:Math.max(p[key]||0,s)}))}/>}
@@ -442,4 +450,16 @@ export default function App(){
       `}</style>
     </div>
   );
+}
+
+/* ══════════════════════════════════════════
+   메인 App — 학년 라우터
+══════════════════════════════════════════ */
+export default function App() {
+  const [grade, setGrade] = useState(null); // null=선택전 | 2 | 4
+
+  if (grade === null) return <GradeSelect onSelect={setGrade} />;
+  if (grade === 2)    return <Grade2App onBack={() => setGrade(null)} />;
+  if (grade === 4)    return <App4 onBack={() => setGrade(null)} />;
+  return null;
 }
