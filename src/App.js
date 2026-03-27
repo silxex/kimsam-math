@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import App4 from "./App_grade4";
 import App3 from "./App_grade3";
+import App1 from "./App_grade1";
+import { App5, App6 } from "./App_grade56";
 
 /* ══════════════════════════════════════════
    SVG 컴포넌트
@@ -373,9 +375,12 @@ function UnitSelect({semester,stars,ttRec,onSelect,onBack}){const sd=SDATA[semes
 ══════════════════════════════════════════ */
 function GradeSelect({ onSelect }) {
   const grades = [
+    { g:1, emoji:"🌱", color:"#55EFC4", light:"#E0F2F1", border:"#80CBC4", desc:"9까지의 수 · 덧셈뺄셈 · 비교하기 · 시계 등" },
     { g:2, emoji:"🐣", color:"#FF9F43", light:"#FFF3E0", border:"#FFD08A", desc:"세 자리 수 · 도형 · 덧셈뺄셈 · 구구단 등" },
-    { g:3, emoji:"🐥", color:"#55EFC4", light:"#E0F2F1", border:"#80CBC4", desc:"덧셈뺄셈 · 나눗셈 · 곱셈 · 분수 · 원 등" },
+    { g:3, emoji:"🐥", color:"#48DBFB", light:"#E0F7FA", border:"#80DEEA", desc:"덧셈뺄셈 · 나눗셈 · 곱셈 · 분수 · 원 등" },
     { g:4, emoji:"🦊", color:"#A29BFE", light:"#EDE7F6", border:"#CE93D8", desc:"큰 수 · 각도 · 분수 · 소수 · 다각형 등" },
+    { g:5, emoji:"⭐", color:"#FF6B81", light:"#FCE4EC", border:"#F48FB1", desc:"혼합계산 · 약수배수 · 분수 · 넓이 · 직육면체 등" },
+    { g:6, emoji:"🏆", color:"#FDCB6E", light:"#FFFDE7", border:"#FFE082", desc:"분수나눗셈 · 비율 · 원 · 비례식 · 입체도형 등" },
   ];
   return (
     <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#F8F9FA 0%,#EEF2FF 100%)",display:"flex",alignItems:"flex-start",justifyContent:"center",padding:20,boxSizing:"border-box"}}>
@@ -461,8 +466,11 @@ export default function App() {
   const [grade, setGrade] = useState(null); // null=선택전 | 2 | 4
 
   if (grade === null) return <GradeSelect onSelect={setGrade} />;
+  if (grade === 1)    return <App1 onBack={() => setGrade(null)} />;
   if (grade === 2)    return <Grade2App onBack={() => setGrade(null)} />;
   if (grade === 3)    return <App3 onBack={() => setGrade(null)} />;
   if (grade === 4)    return <App4 onBack={() => setGrade(null)} />;
+  if (grade === 5)    return <App5 onBack={() => setGrade(null)} />;
+  if (grade === 6)    return <App6 onBack={() => setGrade(null)} />;
   return null;
 }
