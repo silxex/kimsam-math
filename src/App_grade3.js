@@ -65,7 +65,7 @@ const g3_1_2_gens = [
 // 3단원: 나눗셈
 const g3_1_3_gens = [
   ()=>{const b=Math.floor(Math.random()*8)+2,q=Math.floor(Math.random()*9)+1,a=b*q;return{q:`${a} ÷ ${b} = ?`,choices:[String(q),String(q+1),String(q-1),String(q+2)].sort(()=>Math.random()-0.5),ans:String(q),explain:`${a}÷${b}=${q}`};},
-  ()=>{const b=Math.floor(Math.random()*8)+2,q=Math.floor(Math.random()*9)+1,a=b*q;return{q:`사탕 ${a}개를 ${b}명에게 똑같이 나누면\n한 명이 받는 수는?`,choices:[String(q),String(q+1),String(q-1),String(q+2)].sort(()=>Math.random()-0.5),ans:String(q),explain:`${a}÷${b}=${q}개`;},
+  ()=>{const b=Math.floor(Math.random()*8)+2,q=Math.floor(Math.random()*9)+1,a=b*q;return{q:`사탕 ${a}개를 ${b}명에게 똑같이 나누면\n한 명이 받는 수는?`,choices:[String(q),String(q+1),String(q-1),String(q+2)].sort(()=>Math.random()-0.5),ans:String(q),explain:`${a}÷${b}=${q}개`};},
   ()=>{const b=Math.floor(Math.random()*7)+2,q=Math.floor(Math.random()*9)+1,a=b*q;return{q:`${a}를 똑같이 ${q}묶음으로 나누면\n한 묶음은 몇 개?`,choices:[String(b),String(b+1),String(b-1),String(b+2)].sort(()=>Math.random()-0.5),ans:String(b),explain:`${a}÷${q}=${b}개`};},
   ()=>{const b=Math.floor(Math.random()*8)+2,q=Math.floor(Math.random()*9)+1,a=b*q;return{q:`□ ÷ ${b} = ${q}\n□에 알맞은 수는?`,choices:[String(a),String(a+b),String(a-b),String(a+1)].sort(()=>Math.random()-0.5),ans:String(a),explain:`${q}×${b}=${a}이에요.`};},
   ()=>{const b=Math.floor(Math.random()*7)+2,a=b*(Math.floor(Math.random()*8)+2);return{q:`${a} ÷ □ = ${a/b}\n□에 알맞은 수는?`,choices:[String(b),String(b+1),String(b-1),String(b+2)].sort(()=>Math.random()-0.5),ans:String(b),explain:`${a}÷${a/b}=${b}이에요.`};},
