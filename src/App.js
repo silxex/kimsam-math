@@ -355,7 +355,18 @@ const TQ=20;
 ══════════════════════════════════════════ */
 function QuizScreen({semester,unitId,onBack,onStar}){
   const unit=SDATA[semester].units.find(u=>u.id===unitId);
-  const [questions]=useState(()=>Array.from({length:TQ},()=>unit.gen()));
+  const [questions]=useState(()=>{
+    const n=TQ; const gens_=unit.gens||null;
+    if(gens_){
+      const result=[]; const copies=Math.ceil(n/gens_.length)+1; const pool=[];
+      for(let cp=0;cp<copies;cp++){[...gens_].sort(()=>Math.random()-0.5).forEach(g=>pool.push(g()));}
+      const seen=new Set();
+      for(const q of pool){if(result.length>=n)break;const key=q.q.slice(0,20);if(!seen.has(key)){seen.add(key);result.push(q);}}
+      while(result.length<n)result.push(gens_[result.length%gens_.length]());
+      return result;
+    }
+    return Array.from({length:n},()=>unit.gen());
+  });
   const [qIdx,setQIdx]=useState(0);const[selected,setSelected]=useState(null);const[status,setStatus]=useState(null);const[showHint,setShowHint]=useState(false);const[shake,setShake]=useState(false);const[combo,setCombo]=useState(0);const[showCombo,setShowCombo]=useState(false);const[confetti,setConfetti]=useState(false);const[score,setScore]=useState(0);const[done,setDone]=useState(false);
   const q=questions[qIdx],prog=(qIdx/TQ)*100;
   function pick(c){if(status)return;setSelected(c);if(c===q.ans){setStatus("correct");setConfetti(true);setTimeout(()=>setConfetti(false),1800);const nc=combo+1;setCombo(nc);setScore(s=>s+1);if(nc>=3){setShowCombo(true);setTimeout(()=>setShowCombo(false),1600);}}else{setStatus("wrong");setShake(true);setShowHint(true);setCombo(0);setTimeout(()=>setShake(false),600);}}
@@ -388,7 +399,7 @@ function GradeSelect({ onSelect }) {
       <div style={{background:"white",borderRadius:32,padding:"28px 22px",width:"100%",maxWidth:420,boxShadow:"0 20px 60px rgba(0,0,0,0.08)"}}>
         <div style={{textAlign:"center",marginBottom:28}}>
           <div style={{fontSize:56,marginBottom:8}}>📚</div>
-          <h1 style={{margin:0,fontSize:26,fontWeight:900,color:"#2D3436",fontFamily:"'Nunito',sans-serif"}}>초등 수학</h1>
+          <h1 style={{margin:0,fontSize:22,fontWeight:900,color:"#2D3436",fontFamily:"'Nunito',sans-serif"}}>남악오룡김샘수학</h1><div style={{fontSize:15,fontWeight:800,color:"#A29BFE",fontFamily:"'Nunito',sans-serif",marginTop:4}}>초등연산</div>
           <p style={{margin:"6px 0 0",color:"#B2BEC3",fontSize:13,fontFamily:"'Nunito',sans-serif"}}>학년을 선택해주세요!</p>
         </div>
         <div style={{display:"flex",flexDirection:"column",gap:14}}>
